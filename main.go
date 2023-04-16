@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-const APP_VERSION = "1.0.0"
+const APP_VERSION = "2.0.0"
 
 func get_app_version(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "version: %s", APP_VERSION)
