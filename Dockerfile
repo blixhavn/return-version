@@ -1,24 +1,26 @@
-# Use the official Python image as the base image
-FROM python:3.10-slim
+# Use the official Golang image as the base image for the builder stage
+FROM golang:1.17-alpine as builder
 
 # Set the working directory
 WORKDIR /app
 
-# Create a user with limited privileges
-RUN useradd --create-home appuser
-USER appuser
+# Copy the Go files and go.mod into the container
+COPY main.go go.mod ./
 
-# Copy requirements.txt into the container
-COPY requirements.txt .
+# Build the Go application with CGO disabled
+RUN CGO_ENABLED=0 go build -ldflags="-w -s" -o main
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --user --trusted-host pypi.python.org -r requirements.txt
+# Create the minimal runtime image using the scratch image
+FROM scratch
 
-# Copy the rest of the application files into the container
-COPY --chown=appuser:appuser . .
+# Set the working directory
+WORKDIR /app
 
-# Make port 80 available to the world outside this container
+# Copy the binary from the builder stage
+COPY --from=builder /app/main /app/main
+
+# Make port 8000 available to the world outside this container
 EXPOSE 8000
 
 # Run the application
-CMD ["python", "app.py"]
+CMD ["/app/main"]
