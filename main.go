@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-const APP_VERSION = "1.0.0"
+const APP_VERSION = "2.0.0"
 
 func get_app_info(w http.ResponseWriter, r *http.Request) {
 	hostname := os.Getenv("HOSTNAME")
